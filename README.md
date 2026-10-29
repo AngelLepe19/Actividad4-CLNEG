@@ -1,64 +1,64 @@
-# TechStore U4 — Lógica de negocio con DDD
+TechStore - Actividad 4 (Lógica de Negocio)
 
-Proyecto de la Actividad 4 (Componentes de lógica de negocio, UANL FIME). Carga pedidos desde CSV a objetos de dominio, aplica reglas de descuento con Specifications, controla el ciclo de vida del pedido con una máquina de estados y eventos de dominio, y expone todo mediante una API REST con FastAPI.
+Este repositorio contiene la **Actividad 4** de la materia Componentes de Lógica de Negocio (FIME). Aquí desarrollamos el "cerebro" o núcleo de negocio de una tienda simulada usando Python, aplicando reglas de dominio y conectándolo a una API sencilla con FastAPI.
 
-## Requisitos
-- Python 3.11 o superior
+Toda la información se maneja en memoria a través de unos archivos CSV de prueba (no requiere base de datos).
 
-## Instalación (PowerShell, Windows)
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
+## Reglas del Negocio (Lo que hace el sistema)
+
+Nuestro código se encarga de proteger las siguientes reglas de TechStore:
+1. **Límite de artículos:** Un pedido no puede tener más de 20 unidades en total.
+2. **Validación de estados:** Los artículos solo se pueden agregar si el pedido está en estado `DRAFT` (borrador).
+3. **Descuento VIP (10%):** Se aplica solo si la compra supera los $500 MXN, el cliente es VIP, lleva al menos 4 unidades y no hay otra promoción activa.
+4. **Descuento por Volumen (5%):** Se aplica si el total supera los $5,000 MXN y no hay otra promoción activa.
+5. **Máquina de estados:** Los pedidos siguen un orden estricto (`DRAFT` ➔ `CONFIRMED` ➔ `SHIPPED`). No puedes enviar algo que no ha sido confirmado, ni cancelar algo que ya se envió.
+
+## Pasos de Instalación
+
+1. Clona este repositorio en tu computadora:
+   ```bash
+   git clone https://github.com/AngelLepe19/Actividad4-CLNEG
+   cd Actividad4-CLNEG
+   ```
+
+2. Crea y activa un entorno virtual (para no mezclar librerías):
+   ```bash
+   # Windows
+   python -m venv .venv
+   .venv\Scripts\activate
+   
+   # Mac/Linux
+   python -m venv .venv
+   source .venv/bin/activate
+   ```
+
+3. Instala las librerías necesarias:
+   ```bash
+   python -m pip install fastapi uvicorn pytest httpx
+   ```
+
+## Ejecución de la API y Pruebas
+
+**Para levantar la API (Servidor):**
+Ejecuta el siguiente comando en tu terminal:
+```bash
+uvicorn app.api:app --reload
 ```
-Si no tienes `requirements.txt`: `pip install fastapi uvicorn pytest httpx`
+Una vez iniciado, entra en tu navegador a **http://127.0.0.1:8000/docs** para ver y probar la interfaz (Swagger).
 
-## Ejecutar la API
-```powershell
-python -m uvicorn app.api:app --reload
-```
-Abre http://127.0.0.1:8000/docs (Swagger) para probar los endpoints.
-
-## Ejecutar pruebas
-```powershell
-python -m pytest -v
-```
-Resultado esperado: 25 pruebas aprobadas.
-
-## Estructura
-```
-app/
-  domain.py          Order, Money, OrderItem, Customer, eventos y excepciones
-  specifications.py  Specifications (&, |, ~) y reglas de descuento
-  api.py             API FastAPI
-datos/               CSV de clientes, productos y pedidos
-tests/               test_domain.py, test_api.py
-prueba_rapida.py     Descuentos de pedidos de ejemplo
-prueba_estados.py    Escenarios de estados (E03, E06-E08, E11-E15)
+**Para correr las pruebas automáticas:**
+Programamos pruebas para los 15 escenarios solicitados (E01 al E15). Para ejecutarlas, usa:
+```bash
+python -m pytest -q
 ```
 
-## Reglas de negocio
-- Máximo 20 **unidades** por pedido (suma de cantidades, no de renglones).
-- Descuento 10 %: cliente VIP, total > 500, al menos 4 unidades y sin promoción activa.
-- Descuento 5 %: total > 5,000 y sin promoción activa. El 10 % tiene prioridad.
-- Dinero con `Decimal`, moneda MXN.
+## Endpoints de la API
 
-## Estados del pedido
-DRAFT → CONFIRMED → SHIPPED → DELIVERED / RETURNED; CONFIRMED → CANCELLED.
-Cada transición valida, cambia el estado y registra el evento (OrderConfirmed, OrderShipped, OrderCancelled, OrderDelivered, OrderReturned).
+La API cuenta con las siguientes rutas principales para gestionar los pedidos:
 
-## Endpoints
-| Método | Ruta | Descripción |
-|---|---|---|
-| GET | /orders/{order_id} | Consulta pedido, descuento y eventos |
-| POST | /orders/{order_id}/confirm | Confirma |
-| POST | /orders/{order_id}/ship | Envía (body: `tracking_number`) |
-| POST | /orders/{order_id}/cancel | Cancela (body: `reason`) |
-| POST | /orders/{order_id}/deliver | Entrega |
-| POST | /orders/{order_id}/return | Devuelve |
+* **`GET /orders/{order_id}`**: Te muestra los detalles y el estado actual de un pedido.
+* **`POST /orders/{order_id}/confirm`**: Confirma el pedido (solo si es válido).
+* **`POST /orders/{order_id}/ship`**: Pasa el pedido a estado "Enviado" (te pedirá un número de guía).
+* **`POST /orders/{order_id}/cancel`**: Cancela el pedido (te pedirá un motivo).
 
-Códigos de error: 404 pedido inexistente, 409 transición inválida, 422 datos inválidos o límite de unidades.
-
-## Notas
-- Los datos viven en memoria: reiniciar el servidor restaura los pedidos en DRAFT.
-- IDs de pedido con letra O: `O001`, no `1`.
+*Nota: La API está configurada para devolver errores claros si intentas romper las reglas (ej. Error 409 si intentas confirmar un pedido dos veces).*
