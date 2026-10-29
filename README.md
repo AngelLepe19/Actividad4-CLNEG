@@ -1,4 +1,4 @@
-TechStore - Actividad 4 (Lógica de Negocio)
+## TechStore - Actividad 4 (Lógica de Negocio)
 
 Este repositorio contiene la **Actividad 4** de la materia Componentes de Lógica de Negocio (FIME). Aquí desarrollamos el "cerebro" o núcleo de negocio de una tienda simulada usando Python, aplicando reglas de dominio y conectándolo a una API sencilla con FastAPI.
 
