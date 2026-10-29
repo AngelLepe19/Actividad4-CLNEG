@@ -2,6 +2,13 @@
 
 Este repositorio contiene la **Actividad 4** de la materia Componentes de Lógica de Negocio (FIME). Aquí desarrollamos el "cerebro" o núcleo de negocio de una tienda simulada usando Python, aplicando reglas de dominio y conectándolo a una API sencilla con FastAPI.
 
+Integrantes:
+| Alumno | Matrícula |
+| :--- | :--- |
+| Ángel Uriel Lepe Rodriguez | 2115842 |
+| Eder Abihú López Guzmán | 2116464 |
+| Alexia Guadalupe Rodriguez Lara | 2117441 |
+
 Toda la información se maneja en memoria a través de unos archivos CSV de prueba (no requiere base de datos).
 
 ## Reglas del Negocio (Lo que hace el sistema)
