@@ -62,5 +62,3 @@ Códigos de error: 404 pedido inexistente, 409 transición inválida, 422 datos 
 ## Notas
 - Los datos viven en memoria: reiniciar el servidor restaura los pedidos en DRAFT.
 - IDs de pedido con letra O: `O001`, no `1`.
-
-**Autor:** Eder Abihú López Guzmán — Equipo 4
